@@ -1,0 +1,3 @@
+Timestamp=`date +%d-%b-%Y_%H-%M`
+freshclam
+clamscan -r / --exclude-dir=/sys/ --quiet --infected --log=/var/log/clamav/scan_daily/scan-$Timestamp.log

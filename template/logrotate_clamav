@@ -1,0 +1,11 @@
+/var/log/clamav/scan_hourly/*  /var/log/clamav/scan_daily/{
+    daily
+    dateext
+    dateformat -%d%m%Y
+    missingok
+    rotate 90
+    compress
+    delaycompress
+    notifempty
+    create 600 root root
+}

@@ -43,7 +43,7 @@
         lineinfile: dest=/etc/clamd.d/scan.conf regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
         with_items:
           - { regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
-          - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamd.scan/clamd.sock'}
+          - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/clamav/clamd.socket'}
           - { regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 

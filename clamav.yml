@@ -91,7 +91,7 @@
         with_items:
           - { src: './template/logrotate_clamav' , dest: '/etc/logrotate.d/clamav' }
           - { src: './template/clamscan_daily' , dest: '/etc/cron.daily/clamav_daily' }
-          - { src: './template/clamscan_hourly' , dest: '/etc/cron.daily/clamav_hourly' }
+          - { src: './template/clamscan_hourly' , dest: '/etc/cron.hourly/clamav_hourly' }
 
       - name: Update database ClamAV
         shell: freshclam

@@ -98,7 +98,8 @@
 
       - name: Update database ClamAV
         shell: freshclam
-
+        when: ansible_distribution == "CentOS"
+        
       - name: Install Config freshclam systemd 
         copy: src='{{ item.src }}' dest='{{ item.dest }}' mode="0644" owner=root group=root
         with_items:

@@ -92,14 +92,14 @@
       - name: Install Config schedule scan clamav 
         copy: src='{{ item.src }}' dest='{{ item.dest }}' mode='{{ item.mode }}'
         with_items:
-          - { src: './template/logrotate_clamav' , dest: '/etc/logrotate.d/clamav' , mode: '0700'}
-          - { src: './template/clamscan_daily' , dest: '/etc/cron.daily/clamav_daily', mode: '0700' }
-          - { src: './template/clamscan_hourly' , dest: '/etc/cron.hourly/clamav_hourly', mode: '0644' }
+          - { src: './template/logrotate_clamav' , dest: '/etc/logrotate.d/clamav' , mode: '0755'}
+          - { src: './template/clamscan_daily' , dest: '/etc/cron.daily/clamav_daily', mode: '0755' }
+          - { src: './template/clamscan_hourly' , dest: '/etc/cron.hourly/clamav_hourly', mode: '0755' }
 
       - name: Update database ClamAV
         shell: freshclam
         when: ansible_distribution == "CentOS"
-        
+
       - name: Install Config freshclam systemd 
         copy: src='{{ item.src }}' dest='{{ item.dest }}' mode="0644" owner=root group=root
         with_items:

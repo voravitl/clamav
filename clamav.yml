@@ -123,7 +123,7 @@
       - name: restart clamd [Ubuntu 14]
         service: state=started name="{{ item.name }}" enabled=yes
         with_items: 
-          - clamav-daemon.service
-          - clamav-freshclam.service
+          - clamav-daemon
+          - clamav-freshclam
         when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '14'
 

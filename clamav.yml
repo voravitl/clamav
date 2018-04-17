@@ -74,14 +74,15 @@
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 
       - name: mkdir log path ClamAV
-        file: path="{{ item.path }}"  state=directory mode="0744" recurse=yes owner=clam 
+        file: path="{{ item.path }}"  state=directory mode="0744" recurse=yes owner=clamav  group=clamav
         with_items:
           - { path: '/var/log/clamav/scan_hourly/'}
           - { path: '/var/log/clamav/scan_daily/'}
           - { path: '/var/run/clamav'}
+        when: ansible_distribution == "CentOS" and ansible_distribution_major_version <= '6' or ansible_distribution == "Ubuntu"
 
-      - name: mkdir log path ClamAV
-        file: path="{{ item.path }}"  state=directory mode="0744" recurse=yes owner=clamscan 
+      - name: mkdir log path ClamAV (CentOS 7)
+        file: path="{{ item.path }}"  state=directory mode="0744" recurse=yes owner=clamscan group=clamscan
         with_items:
           - { path: '/var/log/clamav/scan_hourly/'}
           - { path: '/var/log/clamav/scan_daily/'}

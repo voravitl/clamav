@@ -1,4 +1,4 @@
 Timestamp=`date +%d-%b-%Y_%H-%M`
 SCAN1=`find / -not -wholename '/sys/*' -and -not -wholename '/proc/*' -mmin -61 -type f -print0 | xargs -0 -r`
 SCAN2=`find / -not -wholename '/sys/*' -and -not -wholename '/proc/*' -cmin -61 -type f -print0 | xargs -0 -r`
-ionice -c3 nice -n 19 clamscan --exclude-dir=/proc/ --exclude-dir=/sys/ --quiet --infected --log=/var/log/clamav/scan_hourly/scan-$Timestamp.log `echo $SCAN1 $SCAN2`
+ionice -c3 nice -n 19 clamscan --exclude-dir=/proc/ --exclude-dir=/sys/ --quiet --infected --max-filesize=4000M --max-scansize=4000M --bytecode-timeout=190000 --log=/var/log/clamav/scan_hourly/scan-$Timestamp.log `echo $SCAN1 $SCAN2`

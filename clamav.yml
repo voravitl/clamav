@@ -114,14 +114,14 @@
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 
       - name: restart clamd [Ubuntu 16]
-        systemd: state=started name="{{ item.name }}" enabled=yes
+        systemd: state=started name="{{ item }}" enabled=yes
         with_items: 
           - clamav-daemon.service
           - clamav-freshclam.service
         when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '16'
       
       - name: restart clamd [Ubuntu 14]
-        service: state=started name="{{ item.name }}" enabled=yes
+        service: state=started name="{{ item}}" enabled=yes
         with_items: 
           - clamav-daemon
           - clamav-freshclam

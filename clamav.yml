@@ -28,31 +28,34 @@
         with_items:
           - clamav
           - clamav-daemon
-        when: ansible_distribution == "Ubuntu" 
+        when: ansible_distribution == "Ubuntu"
 
       - name: Config ClamAV  (CentOS 6)
-        lineinfile: dest=/etc/clamd.conf regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
+        lineinfile: dest="{{ item.dest }}" regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
         with_items:
-          - { regexp: '^TCPSocket', insertbefore: '^#TCPSocket' , line: 'TCPSocket 3310'}
-          - { regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
-          - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
-          - { regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+          - { dest: '/etc/clamd.conf' ,regexp: '^TCPSocket', insertbefore: '^#TCPSocket' , line: 'TCPSocket 3310'}
+          - { dest: '/etc/clamd.conf' ,regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
+          - { dest: '/etc/clamd.conf' ,regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
+          - { dest: '/etc/clamd.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+          - { dest: '/etc/clamav/freshclam.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '6'
 
       - name: Config ClamAV  (CentOS 7)
-        lineinfile: dest=/etc/clamd.d/scan.conf regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
+        lineinfile: dest="{{ item.dest }}" regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
         with_items:
-          - { regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
-          - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
-          - { regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+          - { dest: '/etc/clamd.d/scan.conf' ,regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
+          - { dest: '/etc/clamd.d/scan.conf' ,regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
+          - { dest: '/etc/clamd.d/scan.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+          - { dest: '/etc/clamav/freshclam.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 
-      - name: Config freshclam 
-        lineinfile: dest=/etc/freshclam.conf regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
+      - name: Config ClamAV  (Ubuntu)
+        lineinfile: dest="{{ item.dest }}" regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
         with_items:
-          - { regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
-          - { regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
-        when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7' and ansible_distribution_major_version == '6'
+          - { dest: '/etc/clamav/clamd.conf' , regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
+          - { dest: '/etc/clamav/clamd.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+          - { dest: '/etc/clamav/freshclam.conf' ,regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
+        when: ansible_distribution == "Ubuntu"
 
       - name: Cleanup Config ClamAV (CentOS 6)
         lineinfile: dest=/etc/clamd.conf regexp="{{ item.regexp }}"  state=absent
@@ -89,8 +92,8 @@
       - name: Install Config schedule scan clamav 
         copy: src='{{ item.src }}' dest='{{ item.dest }}' mode='{{ item.mode }}'
         with_items:
-          - { src: './template/logrotate_clamav' , dest: '/etc/logrotate.d/clamav' , mode: '0755'}
-          - { src: './template/clamscan_daily' , dest: '/etc/cron.daily/clamav_daily', mode: '0755' }
+          - { src: './template/logrotate_clamav' , dest: '/etc/logrotate.d/clamav' , mode: '0700'}
+          - { src: './template/clamscan_daily' , dest: '/etc/cron.daily/clamav_daily', mode: '0700' }
           - { src: './template/clamscan_hourly' , dest: '/etc/cron.hourly/clamav_hourly', mode: '0644' }
 
       - name: Update database ClamAV
@@ -102,10 +105,24 @@
           - { src: './template/freshclam.service' , dest: '/usr/lib/systemd/system/freshclam.service' }
         when: ansible_distribution == "CentOS"  and ansible_distribution_major_version == '7'
 
-      - name: restart clamd [CentOS 5, CentOS 6 ,Ubuntu 12 , Ubuntu 14 ]
+      - name: restart clamd [CentOS 5, CentOS 6 ]
         service: state=started name=clamd enabled=yes
-        when: ansible_distribution == "CentOS" and ansible_distribution_major_version <= '6' or ansible_distribution == "Ubuntu" and ansible_distribution_major_version <= '14'
+        when: ansible_distribution == "CentOS" and ansible_distribution_major_version <= '6'
 
-      - name: restart clamd [CentOS 7 or Ubuntu 16.04]
+      - name: restart clamd [CentOS 7 ]
         shell: systemctl restart freshclam clamd@scan
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
+
+      - name: restart clamd [Ubuntu 16]
+        systemd: state=started name="{{ item.name }}" enabled=yes
+        with_items: 
+          - clamav-daemon.service
+          - clamav-freshclam.service
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '16'
+      
+      - name: restart clamd [Ubuntu 14]
+        service: state=started name="{{ item.name }}" enabled=yes
+        with_items: 
+          - clamav-daemon.service
+          - clamav-freshclam.service
+        when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version == '14'

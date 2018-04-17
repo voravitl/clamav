@@ -43,11 +43,7 @@
         lineinfile: dest=/etc/clamd.d/scan.conf regexp="{{ item.regexp }}" insertbefore="{{ item.insertbefore }}" line="{{ item.line }}" state=present backup=yes
         with_items:
           - { regexp: '^Example', insertbefore: '^Example' , line: '#Example'}
-<<<<<<< HEAD
-          - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/clamav/clamd.socket'}
-=======
           - { regexp: '^LocalSocket', insertbefore: '^#LocalSocket' , line: 'LocalSocket /var/run/clamav/clamd.sock'}
->>>>>>> 5ba2fe77777d4e33a11b32f1832af5966031c489
           - { regexp: '^DatabaseDirectory', insertbefore: '^#DatabaseDirectory' , line: 'DatabaseDirectory /var/lib/clamav'} 
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 
@@ -79,11 +75,7 @@
         with_items:
           - { path: '/var/log/clamav/scan_hourly/'}
           - { path: '/var/log/clamav/scan_daily/'}
-<<<<<<< HEAD
-          - { path: '/var/clamav/'}
-=======
           - { path: '/var/run/clamav'}
->>>>>>> 5ba2fe77777d4e33a11b32f1832af5966031c489
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '6'
 
       - name: mkdir log path ClamAV
@@ -91,11 +83,7 @@
         with_items:
           - { path: '/var/log/clamav/scan_hourly/'}
           - { path: '/var/log/clamav/scan_daily/'}
-<<<<<<< HEAD
-          - { path: '/var/clamav/'}
-=======
           - { path: '/var/run/clamav'}
->>>>>>> 5ba2fe77777d4e33a11b32f1832af5966031c489
         when: ansible_distribution == "CentOS" and ansible_distribution_major_version == '7'
 
       - name: Install Config schedule scan clamav 
